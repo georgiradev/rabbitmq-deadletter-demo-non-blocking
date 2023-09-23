@@ -1,22 +1,23 @@
 package com.example.rabbitmqdeadletterdemononblocking.producer;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import static com.example.rabbitmqdeadletterdemononblocking.util.Constants.EXCHANGE_NAME;
+import static com.example.rabbitmqdeadletterdemononblocking.util.Constants.PRIMARY_ROUTING_KEY;
 
 @Component
 @AllArgsConstructor
 public class Producer implements CommandLineRunner {
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public void run(String... args) throws Exception {
         do {
-            rabbitTemplate.convertAndSend("tutorial-exchange", "primaryRoutingKey", "Hello, world!");
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, PRIMARY_ROUTING_KEY, "Hello, world!");
             Thread.sleep(60000);
         } while (true);
     }

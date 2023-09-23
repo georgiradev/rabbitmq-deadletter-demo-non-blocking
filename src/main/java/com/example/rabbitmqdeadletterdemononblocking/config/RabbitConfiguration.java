@@ -4,17 +4,10 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.example.rabbitmqdeadletterdemononblocking.util.Constants.*;
+
 @Configuration
 public class RabbitConfiguration {
-
-    private static final String EXCHANGE_NAME = "tutorial-exchange";
-    public static final String PRIMARY_QUEUE = "primaryWorkerQueue";
-
-    private static final String WAIT_QUEUE = PRIMARY_QUEUE + ".wait";
-
-    public static final String STORAGE_QUEUE = PRIMARY_QUEUE + ".parkingLot";
-
-    private static final String PRIMARY_ROUTING_KEY = "primaryRoutingKey";
 
     @Bean
     DirectExchange exchange() {
