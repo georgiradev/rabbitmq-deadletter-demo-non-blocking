@@ -1,7 +1,7 @@
 package com.example.rabbitmqdeadletterdemononblocking.consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,25 +13,31 @@ import java.util.Map;
 import static com.example.rabbitmqdeadletterdemononblocking.config.RabbitConfiguration.STORAGE_QUEUE;
 import static com.example.rabbitmqdeadletterdemononblocking.config.RabbitConfiguration.PRIMARY_QUEUE;
 
+@Slf4j
 @Component
-public class RetryingRabbitConsumer {
-    private final Logger logger = LoggerFactory.getLogger(RetryingRabbitConsumer.class);
+@AllArgsConstructor
+public class Consumer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public RetryingRabbitConsumer(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
-
     @RabbitListener(queues = PRIMARY_QUEUE)
     public void primary(Message message) throws RuntimeException, InterruptedException {
-        logger.info("Message read from workerQueue: " + message);
+        log.info("Message read from workerQueue: " + message);
         if (hasExceededRetryCount(message)) {
             putIntoStorage(message);
         } else {
             Thread.sleep(5000);
-            throw new RuntimeException("There was an error processing the message. Moving message to waiting queue");
+            try {
+                throwException();
+            } catch (RuntimeException ex) {
+                log.error(ex.getMessage());
+            }
         }
+    }
+
+    private void throwException() {
+        // method to simulate error while processing the message
+        throw new RuntimeException("There was an error processing the message. Moving message to waiting queue");
     }
 
     private boolean hasExceededRetryCount(Message message) {
@@ -45,7 +51,7 @@ public class RetryingRabbitConsumer {
     }
 
     private void putIntoStorage(Message failedMessage) {
-        logger.info("Retries exeeded putting into parking lot queue");
+        log.info("Retries exceeded putting into parking lot queue");
         this.rabbitTemplate.send(STORAGE_QUEUE, failedMessage);
     }
 }

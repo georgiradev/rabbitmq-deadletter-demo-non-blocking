@@ -1,14 +1,16 @@
 package com.example.rabbitmqdeadletterdemononblocking.producer;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class Producer implements CommandLineRunner {
 
-    @Autowired
     private RabbitTemplate rabbitTemplate;
 
     @Override
